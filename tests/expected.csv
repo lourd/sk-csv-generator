@@ -1,0 +1,12 @@
+animal_ermine,is a,animal_mammal
+,has official name,ermine
+,has color,red
+animal_falcon,is a,animal_bird
+,has official name,falcon
+,has color,red
+animal_ferret,is a,animal_mammal
+,has official name,ferret
+,has color,blue
+animal_finch,is a,animal_bird
+,has official name,finch
+,has color,blue
