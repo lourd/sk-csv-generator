@@ -32,14 +32,6 @@ function stringify(arg, opts) {
  * Our utils
  */
 
-function run(fname) {
-  const f = fs.readFileSync(fname)
-  return parse(f).then(data => {
-    applyDefaults(data)
-    return transform(data)
-  })
-}
-
 const ignoredProps = [
   'inherits',
   'prefix',
@@ -50,10 +42,11 @@ function transform(array) {
   const rows = []
   for (const item of array) {
     const row1 = []
-    const name = item.prefix
-      ? `${item.prefix}_${item['official name']}`
-      : item['official name']
-    row1.push(name)
+    let id = item['official name'].toLowerCase().replace(' ', '')
+    if (item.prefix) {
+      id = `${item.prefix}_${id}`
+    }
+    row1.push(id)
     row1.push('is a')
     const type = item.inherits
       ? `${item.inherits}_${item['is a']}`
@@ -86,6 +79,14 @@ function applyDefaults(array) {
       }
     }
   }
+}
+
+function run(fname) {
+  const f = fs.readFileSync(fname)
+  return parse(f).then(data => {
+    applyDefaults(data)
+    return transform(data)
+  })
 }
 
 /**
