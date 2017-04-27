@@ -102,7 +102,10 @@ function cli() {
   const inFile = path.resolve(__dirname, input)
   run(inFile)
     .then(str => {
-      if (!output) console.log(str)
+      if (!output) {
+        console.log(str)
+        console.log('Ya know, if you want the output written to a file you can another filename after the input filename 🖖🏽')
+      }
       else {
         const outfile = path.resolve(__dirname, output)
         fs.writeFileSync(output, str)
@@ -118,4 +121,5 @@ module.exports = {
   run,
   parse,
   applyDefaults,
+  cli,
 }
