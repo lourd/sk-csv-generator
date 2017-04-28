@@ -83,42 +83,38 @@ function applyDefaults(array) {
       }
     }
   }
-  return array
 }
 
-function run(fname) {
-  return fs.readFile(fname)
-    .then(parse)
-    .then(applyDefaults)
-    .then(transform)
-    .then(stringify)
+async function run(fname) {
+  const buf = await fs.readFile(fname)
+  const items = await parse(buf)
+  applyDefaults(items)
+  const rows = transform(items)
+  return await stringify(rows)
 }
 
 /**
  * When run from the command line
  */
 
-function cli() {
+async function cli() {
   const [input, output] = process.argv.slice(2)
   if (!input) {
     console.log('What file? Ya gotta gimme something to work with!')
     process.exit(1)
   }
-  const inFile = path.resolve(__dirname, input)
-  run(inFile)
-    .then(str => {
-      if (!output) {
-        console.log(str)
-        console.log('Ya know, if you want the output written to a file you can another filename after the input filename 🖖🏽')
-      }
-      else {
-        const outfile = path.resolve(__dirname, output)
-        fs.writeFileSync(output, str)
-      }
-    })
-    .catch(() => {
-      console.log('Uh oh, that didn\'t work. 😞  Maybe that\'s not a real file or something?')
-    })
+  try {
+    const string = await run(path.resolve(__dirname, input))
+    if (!output) {
+      console.log(string)
+      console.log('Ya know, if you want the output written to a file you can another filename after the input filename 🖖🏽')
+    }
+    else {
+      await fs.writeFile(path.resolve(__dirname, output), string)
+    }
+  } catch (err) {
+    console.log('Uh oh, that didn\'t work. 😞  Maybe that\'s not a real file or something?')
+  }
 }
 
 if (require.main === module) {

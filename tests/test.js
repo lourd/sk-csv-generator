@@ -1,5 +1,5 @@
 const path = require('path')
-const fs = require('fs')
+const fs = require('mz/fs')
 
 const { run } = require('../')
 
@@ -9,13 +9,14 @@ describe('test files', () => {
   testFiles.forEach(input => {
     const inFile = `${input}.csv`
     const outFile = `${input}-out.csv`
-    it(`${inFile} should transform to ${outFile}`, () => {
+    it(`${inFile} should transform to ${outFile}`, async () => {
       const file = path.resolve(__dirname, inFile)
       const expectedFile = path.resolve(__dirname, outFile)
-      const expected = fs.readFileSync(expectedFile).toString()
-      return run(file).then(data => {
-        expect(data).toBe(expected)
-      })
+      const [outBuf, results] = await Promise.all([
+        fs.readFile(expectedFile),
+        run(file)
+      ])
+      expect(results).toBe(outBuf.toString())
     })
   })
 })
