@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fs = require('mz/fs')
 const path = require('path')
 const csv = require('csv')
 
@@ -19,9 +19,9 @@ function parse(buff, opts) {
   })
 }
 
-function stringify(arg, opts) {
+function stringify(arrayOrObj, opts) {
   return new Promise((resolve, reject) => {
-    csv.stringify(arg, opts, (err, data) => {
+    csv.stringify(arrayOrObj, opts, (err, data) => {
       if (err) reject(err)
       else resolve(data)
     })
@@ -32,14 +32,13 @@ function stringify(arg, opts) {
  * Our utils
  */
 
-const ignoredProps = [
-  'inherits',
-  'prefix',
-  'is a',
-]
-
 function transform(array) {
   const rows = []
+  const ignoredProps = [
+    'inherits',
+    'prefix',
+    'is a',
+  ]
   for (const item of array) {
     const row1 = []
     let id = item['official name'].toLowerCase().replace(' ', '')
@@ -65,9 +64,14 @@ function transform(array) {
       })
     rows.push(...propRows)
   }
-  return stringify(rows)
+  return rows
 }
 
+/**
+ * WARNING: Mutative!
+ * @param  {Object[]} array
+ * @return {Object[]}
+ */
 function applyDefaults(array) {
   const defaults = {}
   for (const item of array) {
@@ -79,14 +83,15 @@ function applyDefaults(array) {
       }
     }
   }
+  return array
 }
 
 function run(fname) {
-  const f = fs.readFileSync(fname)
-  return parse(f).then(data => {
-    applyDefaults(data)
-    return transform(data)
-  })
+  return fs.readFile(fname)
+    .then(parse)
+    .then(applyDefaults)
+    .then(transform)
+    .then(stringify)
 }
 
 /**
@@ -110,6 +115,9 @@ function cli() {
         const outfile = path.resolve(__dirname, output)
         fs.writeFileSync(output, str)
       }
+    })
+    .catch(() => {
+      console.log('Uh oh, that didn\'t work. 😞  Maybe that\'s not a real file or something?')
     })
 }
 
