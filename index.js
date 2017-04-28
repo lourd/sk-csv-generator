@@ -72,12 +72,15 @@ function transform(array) {
  * @param  {Object[]} array
  * @return {Object[]}
  */
-function applyDefaults(array) {
+function applyDefaultsAndClean(array) {
   const defaults = {}
   for (const item of array) {
     for (const prop in item) {
-      if (item[prop]) {
-        defaults[prop] = item[prop]
+      const val = item[prop]
+      if (val) {
+        const trimmed = val.trim()
+        item[prop] = trimmed
+        defaults[prop] = trimmed
       } else {
         item[prop] = defaults[prop]
       }
@@ -88,7 +91,7 @@ function applyDefaults(array) {
 async function run(fname) {
   const buf = await fs.readFile(fname)
   const items = await parse(buf)
-  applyDefaults(items)
+  applyDefaultsAndClean(items)
   const rows = transform(items)
   return await stringify(rows)
 }
@@ -125,6 +128,6 @@ if (require.main === module) {
 module.exports = {
   run,
   parse,
-  applyDefaults,
+  applyDefaultsAndClean,
   cli,
 }
