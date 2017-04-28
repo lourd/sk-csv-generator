@@ -113,7 +113,8 @@ async function cli() {
       await fs.writeFile(path.resolve(__dirname, output), string)
     }
   } catch (err) {
-    console.log('Uh oh, that didn\'t work. 😞  Maybe that\'s not a real file or something?')
+    console.log('Uh oh, that didn\'t work. 😞  Maybe that\'s not a real file or something? Here\'s the error:')
+    console.error(err)
   }
 }
 
