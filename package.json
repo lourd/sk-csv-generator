@@ -1,7 +1,8 @@
 {
-  "name": "kb-csv-parser",
+  "name": "sk-csv-generator",
   "version": "1.0.0",
   "description": "",
+  "private": true,
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
