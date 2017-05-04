@@ -41,7 +41,7 @@ function transform(array) {
   ]
   for (const item of array) {
     const row1 = []
-    let id = item['official name'].toLowerCase().replace(' ', '')
+    let id = item['official name'].toLowerCase().replace(/\W+/g, '')
     if (item.prefix) {
       id = `${item.prefix}_${id}`
     }
