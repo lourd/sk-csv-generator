@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test files should throw an error if a property does not have a "has official name" property 1`] = `
+[Error: Missing "has official name" column for item: {
+  "inherits": "animal",
+  "is a": "dog",
+  "prefix": "dog",
+  "official name": "Labrador",
+  "type": "working"
+}]
+`;

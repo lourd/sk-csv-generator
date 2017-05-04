@@ -19,4 +19,14 @@ describe('test files', () => {
       expect(results).toBe(outBuf.toString())
     })
   })
+
+  it('should throw an error if a property does not have a "has official name" property', async () => {
+    const file = path.resolve(__dirname, './no-name.csv')
+    expect.assertions(1)
+    try {
+      await run(file)
+    } catch (e) {
+      expect(e).toMatchSnapshot()
+    }
+  })
 })

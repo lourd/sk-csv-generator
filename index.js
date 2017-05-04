@@ -41,7 +41,11 @@ function transform(array) {
   ]
   for (const item of array) {
     const row1 = []
-    let id = item['official name'].toLowerCase().replace(/\W+/g, '')
+    let id = item['has official name']
+    if (!id) {
+      throw new Error(`Missing "has official name" column for item: ${JSON.stringify(item, null, 2)}`)
+    }
+    id = id.toLowerCase().replace(/\W+/g, '')
     if (item.prefix) {
       id = `${item.prefix}_${id}`
     }
@@ -58,7 +62,7 @@ function transform(array) {
       .map(prop => {
         const row = []
         row.push('') // indent one column
-        row.push(`has ${prop}`)
+        row.push(prop)
         row.push(item[prop])
         return row
       })
