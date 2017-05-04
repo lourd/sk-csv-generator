@@ -3,10 +3,8 @@ animal_ermine,is a,animal_mammal
 ,color,red
 animal_falcon,is a,animal_bird
 ,has official name,falcon
-,color,red
 animal_ferret,is a,animal_mammal
 ,has official name,ferret
 ,color,blue
 animal_finch,is a,animal_bird
 ,has official name,finch
-,color,blue

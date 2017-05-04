@@ -2,6 +2,8 @@ const fs = require('mz/fs')
 const path = require('path')
 const csv = require('csv')
 
+const NAME_PROP = 'has official name'
+
 /**
  * CSV Utils
  */
@@ -32,18 +34,19 @@ function stringify(arrayOrObj, opts) {
  * Our utils
  */
 
+const ignoredProps = [
+  'inherits',
+  'prefix',
+  'is a',
+]
+
 function transform(array) {
   const rows = []
-  const ignoredProps = [
-    'inherits',
-    'prefix',
-    'is a',
-  ]
   for (const item of array) {
     const row1 = []
-    let id = item['has official name']
+    let id = item[NAME_PROP]
     if (!id) {
-      throw new Error(`Missing "has official name" column for item: ${JSON.stringify(item, null, 2)}`)
+      throw new Error(`Missing "${NAME_PROP}" column for item: ${JSON.stringify(item, null, 2)}`)
     }
     id = id.toLowerCase().replace(/\W+/g, '')
     if (item.prefix) {
@@ -58,7 +61,7 @@ function transform(array) {
     rows.push(row1)
 
     const propRows = Object.keys(item)
-      .filter(prop => !ignoredProps.includes(prop))
+      .filter(prop => item[prop] && !ignoredProps.includes(prop))
       .map(prop => {
         const row = []
         row.push('') // indent one column
@@ -71,6 +74,8 @@ function transform(array) {
   return rows
 }
 
+const shouldApplyDefault = prop => ignoredProps.includes(prop)
+
 /**
  * WARNING: Mutative!
  * @param  {Object[]} array
@@ -78,6 +83,7 @@ function transform(array) {
  */
 function applyDefaultsAndClean(array) {
   const defaults = {}
+  let applyingDefaults = true
   for (const item of array) {
     for (const prop in item) {
       const val = item[prop]
@@ -85,8 +91,11 @@ function applyDefaultsAndClean(array) {
         const trimmed = val.trim()
         item[prop] = trimmed
         defaults[prop] = trimmed
-      } else {
+      } else if (shouldApplyDefault(prop)) {
         item[prop] = defaults[prop]
+      }
+      if (prop === NAME_PROP) {
+        applyingDefaults = false
       }
     }
   }
