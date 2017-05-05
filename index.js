@@ -38,17 +38,18 @@ const ignoredProps = [
   'inherits',
   'prefix',
   'is a',
+  'id',
 ]
 
 function transform(array) {
   const rows = []
   for (const item of array) {
     const row1 = []
-    let id = item[NAME_PROP]
+    let id = item['id'] || item[NAME_PROP]
     if (!id) {
-      throw new Error(`Missing "${NAME_PROP}" column for item: ${JSON.stringify(item, null, 2)}`)
+      throw new Error(`Missing "${NAME_PROP}" and "id" column for item: ${JSON.stringify(item, null, 2)}`)
     }
-    id = id.toLowerCase().replace(/\W+/g, '')
+    id = id.toLowerCase().replace(/\W+/g, '').replace(/^the\s*/gi, '')
     if (item.prefix) {
       id = `${item.prefix}_${id}`
     }
@@ -74,7 +75,7 @@ function transform(array) {
   return rows
 }
 
-const shouldApplyDefault = prop => ignoredProps.includes(prop)
+const shouldApplyDefault = prop => prop !== 'id' && ignoredProps.includes(prop)
 
 /**
  * WARNING: Mutative!
